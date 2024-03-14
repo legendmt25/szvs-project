@@ -1,0 +1,30 @@
+
+{
+  "Application": {
+    "Name": "project",
+    "TouchGfxPath": "../Middlewares/ST/touchgfx",
+    "AvailableColorDepths": [ 32 ],
+    "AvailableLCDs":
+    {
+      "32": "LCD32bpp"
+    },
+    "AvailableResolutions": [
+      {
+        "Width": 480,
+        "Height": 272
+      }
+    ],
+    "PostGenerateTargetCommand": "touchgfx update_project",
+    "Family": "STM32H7",
+    "SubFamily": "STM32H750 Value line",
+    "Platform": "m7",
+    "Toolchain": "STM32CubeIDE",
+    "ProjectFile": "../project.ioc",
+    "OptionalComponentsRoot": "../Middlewares/ST/touchgfx_components",
+    "OptionalComponents": [
+    ],
+    "AdditionalFeatures": [
+    ]
+  },
+  "Version": "4.23.0"
+}
