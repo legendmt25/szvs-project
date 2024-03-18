@@ -5,5 +5,5 @@
 
 USER_OBJS :=
 
-LIBS := -l:libtouchgfx-float-abi-hard.a
+LIBS := -l:libtouchgfx-float-abi-hard.a -l:libPDMFilter_CM7_GCC_wc16.a -l:libpicovoice.a
 

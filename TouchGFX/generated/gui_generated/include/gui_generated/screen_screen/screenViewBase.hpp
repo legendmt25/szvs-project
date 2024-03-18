@@ -9,6 +9,8 @@
 #include <gui/screen_screen/screenPresenter.hpp>
 #include <touchgfx/widgets/Box.hpp>
 #include <touchgfx/widgets/Button.hpp>
+#include "cmsis_os.h"
+#include "main.h"
 
 class screenViewBase : public touchgfx::View<screenPresenter>
 {
@@ -29,6 +31,16 @@ protected:
     touchgfx::Button button1;
 
 private:
+
+    /*
+     * Callback Declarations
+     */
+    touchgfx::Callback<screenViewBase, const touchgfx::AbstractButton&> buttonCallback;
+
+    /*
+     * Callback Handler Declarations
+     */
+    void buttonCallbackHandler(const touchgfx::AbstractButton& src);
 
 };
 

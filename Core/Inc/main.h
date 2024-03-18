@@ -37,6 +37,10 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 
+typedef struct {
+	char* type;
+} ControlType;
+
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -53,6 +57,7 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
+void providerTask_handler(void *argument);
 
 /* USER CODE END EFP */
 

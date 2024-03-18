@@ -59,16 +59,18 @@ TouchGFX/target/generated/TouchGFXConfiguration.o: \
  ../Middlewares/ST/touchgfx/framework/include/touchgfx/widgets/Box.hpp \
  ../Middlewares/ST/touchgfx/framework/include/touchgfx/widgets/Button.hpp \
  ../Middlewares/ST/touchgfx/framework/include/touchgfx/widgets/AbstractButton.hpp \
- ../TouchGFX/generated/images/include/BitmapDatabase.hpp \
- ../TouchGFX/generated/images/include/images/BitmapDatabase.hpp \
- ../Middlewares/ST/touchgfx/framework/include/platform/driver/lcd/LCD32bpp.hpp \
- ../Middlewares/ST/touchgfx/framework/include/touchgfx/Color.hpp \
- ../Middlewares/ST/touchgfx/framework/include/touchgfx/lcd/LCD32DebugPrinter.hpp \
- ../TouchGFX/target/generated/STM32DMA.hpp \
- ../TouchGFX/target/TouchGFXHAL.hpp \
- ../TouchGFX/target/generated/TouchGFXGeneratedHAL.hpp \
- ../TouchGFX/target/STM32TouchController.hpp \
- ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h \
+ ../Core/Inc/FreeRTOSConfig.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h \
+ ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
+ ../Core/Inc/main.h ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h \
  ../Core/Inc/stm32h7xx_hal_conf.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_rcc.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_def.h \
@@ -97,6 +99,7 @@ TouchGFX/target/generated/TouchGFXConfiguration.o: \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_hsem.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c_ex.h \
+ ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_jpeg.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_mmc.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_sdmmc.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_mmc_ex.h \
@@ -105,10 +108,23 @@ TouchGFX/target/generated/TouchGFXConfiguration.o: \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr_ex.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_qspi.h \
+ ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_sai.h \
+ ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_sai_ex.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_sdram.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_fmc.h \
  ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim.h \
- ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h
+ ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h \
+ ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h \
+ ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h \
+ ../TouchGFX/generated/images/include/BitmapDatabase.hpp \
+ ../TouchGFX/generated/images/include/images/BitmapDatabase.hpp \
+ ../Middlewares/ST/touchgfx/framework/include/platform/driver/lcd/LCD32bpp.hpp \
+ ../Middlewares/ST/touchgfx/framework/include/touchgfx/Color.hpp \
+ ../Middlewares/ST/touchgfx/framework/include/touchgfx/lcd/LCD32DebugPrinter.hpp \
+ ../TouchGFX/target/generated/STM32DMA.hpp \
+ ../TouchGFX/target/TouchGFXHAL.hpp \
+ ../TouchGFX/target/generated/TouchGFXGeneratedHAL.hpp \
+ ../TouchGFX/target/STM32TouchController.hpp
 ../TouchGFX/generated/texts/include/texts/TypedTextDatabase.hpp:
 ../Middlewares/ST/touchgfx/framework/include/touchgfx/TypedText.hpp:
 ../Middlewares/ST/touchgfx/framework/include/touchgfx/Font.hpp:
@@ -168,15 +184,18 @@ TouchGFX/target/generated/TouchGFXConfiguration.o: \
 ../Middlewares/ST/touchgfx/framework/include/touchgfx/widgets/Box.hpp:
 ../Middlewares/ST/touchgfx/framework/include/touchgfx/widgets/Button.hpp:
 ../Middlewares/ST/touchgfx/framework/include/touchgfx/widgets/AbstractButton.hpp:
-../TouchGFX/generated/images/include/BitmapDatabase.hpp:
-../TouchGFX/generated/images/include/images/BitmapDatabase.hpp:
-../Middlewares/ST/touchgfx/framework/include/platform/driver/lcd/LCD32bpp.hpp:
-../Middlewares/ST/touchgfx/framework/include/touchgfx/Color.hpp:
-../Middlewares/ST/touchgfx/framework/include/touchgfx/lcd/LCD32DebugPrinter.hpp:
-../TouchGFX/target/generated/STM32DMA.hpp:
-../TouchGFX/target/TouchGFXHAL.hpp:
-../TouchGFX/target/generated/TouchGFXGeneratedHAL.hpp:
-../TouchGFX/target/STM32TouchController.hpp:
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h:
+../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h:
+../Core/Inc/FreeRTOSConfig.h:
+../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h:
+../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h:
+../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h:
+../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/portmacro.h:
+../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h:
+../Middlewares/Third_Party/FreeRTOS/Source/include/task.h:
+../Middlewares/Third_Party/FreeRTOS/Source/include/list.h:
+../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
+../Core/Inc/main.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:
 ../Core/Inc/stm32h7xx_hal_conf.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_rcc.h:
@@ -206,6 +225,7 @@ TouchGFX/target/generated/TouchGFXConfiguration.o: \
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_hsem.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c_ex.h:
+../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_jpeg.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_mmc.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_sdmmc.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_mmc_ex.h:
@@ -214,7 +234,20 @@ TouchGFX/target/generated/TouchGFXConfiguration.o: \
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr_ex.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_qspi.h:
+../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_sai.h:
+../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_sai_ex.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_sdram.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_fmc.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim.h:
 ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_tim_ex.h:
+../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart.h:
+../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_uart_ex.h:
+../TouchGFX/generated/images/include/BitmapDatabase.hpp:
+../TouchGFX/generated/images/include/images/BitmapDatabase.hpp:
+../Middlewares/ST/touchgfx/framework/include/platform/driver/lcd/LCD32bpp.hpp:
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Color.hpp:
+../Middlewares/ST/touchgfx/framework/include/touchgfx/lcd/LCD32DebugPrinter.hpp:
+../TouchGFX/target/generated/STM32DMA.hpp:
+../TouchGFX/target/TouchGFXHAL.hpp:
+../TouchGFX/target/generated/TouchGFXGeneratedHAL.hpp:
+../TouchGFX/target/STM32TouchController.hpp:

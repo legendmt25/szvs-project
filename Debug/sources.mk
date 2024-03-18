@@ -41,14 +41,17 @@ SUBDIRS := \
 Core/Src \
 Core/Startup \
 Drivers/BSP/Components/ft5336 \
+Drivers/BSP/Components/mt25tl01g \
 Drivers/BSP/Components/mt48lc4m32b2 \
 Drivers/BSP/Components/wm8994 \
 Drivers/BSP/STM32H750-DK-Discovery \
 Drivers/STM32H7xx_HAL_Driver/Src \
+LIBJPEG/App \
 Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 \
 Middlewares/Third_Party/FreeRTOS/Source \
 Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang \
+Middlewares/Third_Party/LibJPEG/source \
 TouchGFX/App \
 TouchGFX/build/MINGW32_NT-6.2/generated/fonts/src \
 TouchGFX/build/MINGW32_NT-6.2/generated/gui_generated/src/common \
@@ -75,4 +78,5 @@ TouchGFX/gui/src/model \
 TouchGFX/gui/src/screen_screen \
 TouchGFX/target \
 TouchGFX/target/generated \
+Utilities/JPEG \
 

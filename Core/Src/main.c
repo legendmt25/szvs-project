@@ -19,10 +19,15 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+#include "libjpeg.h"
 #include "app_touchgfx.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stm32h750b_discovery_qspi.h"
+#include "stm32h750b_discovery_sdram.h"
+#include "pv_st_h750b.h"
+#include "queue.h"
 
 /* USER CODE END Includes */
 
@@ -38,7 +43,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+pv_picovoice_t *pvhandle = NULL;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -47,13 +52,19 @@ CRC_HandleTypeDef hcrc;
 
 DMA2D_HandleTypeDef hdma2d;
 
+JPEG_HandleTypeDef hjpeg;
+MDMA_HandleTypeDef hmdma_jpeg_infifo_th;
+MDMA_HandleTypeDef hmdma_jpeg_outfifo_th;
+
 LTDC_HandleTypeDef hltdc;
 
 QSPI_HandleTypeDef hqspi;
 
+SAI_HandleTypeDef hsai_BlockA1;
+
 MMC_HandleTypeDef hmmc1;
 
-TIM_HandleTypeDef htim6;
+UART_HandleTypeDef huart1;
 
 SDRAM_HandleTypeDef hsdram1;
 
@@ -64,37 +75,66 @@ const osThreadAttr_t defaultTask_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
-/* Definitions for touchGfxTask */
-osThreadId_t touchGfxTaskHandle;
-const osThreadAttr_t touchGfxTask_attributes = {
-  .name = "touchGfxTask",
+/* Definitions for TouchGFXTask */
+osThreadId_t TouchGFXTaskHandle;
+const osThreadAttr_t TouchGFXTask_attributes = {
+  .name = "TouchGFXTask",
   .stack_size = 4096 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for micListenTask */
+osThreadId_t micListenTaskHandle;
+const osThreadAttr_t micListenTask_attributes = {
+  .name = "micListenTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for consumerTask */
+osThreadId_t consumerTaskHandle;
+const osThreadAttr_t consumerTask_attributes = {
+  .name = "consumerTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for providerTask */
+osThreadId_t providerTaskHandle;
+const osThreadAttr_t providerTask_attributes = {
+  .name = "providerTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for controlQueue */
+osMessageQueueId_t controlQueueHandle;
+const osMessageQueueAttr_t controlQueue_attributes = {
+  .name = "controlQueue"
+};
 /* USER CODE BEGIN PV */
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_LTDC_Init(void);
-static void MX_QUADSPI_Init(void);
-static void MX_SDMMC1_MMC_Init(void);
-static void MX_CRC_Init(void);
+static void MX_MDMA_Init(void);
 static void MX_DMA2D_Init(void);
 static void MX_FMC_Init(void);
-static void MX_TIM6_Init(void);
+static void MX_SAI1_Init(void);
+static void MX_QUADSPI_Init(void);
+static void MX_USART1_UART_Init(void);
+static void MX_LTDC_Init(void);
+static void MX_SDMMC1_MMC_Init(void);
+static void MX_JPEG_Init(void);
+static void MX_CRC_Init(void);
 void StartDefaultTask(void *argument);
-extern void touchGfxTask_handler(void *argument);
+extern void TouchGFX_Task(void *argument);
+void micListenTask_handler(void *argument);
+void consumerTask_handler(void *argument);
+void providerTask_handler(void *argument);
 
 /* USER CODE BEGIN PFP */
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
 /* USER CODE END 0 */
 
 /**
@@ -104,7 +144,8 @@ extern void touchGfxTask_handler(void *argument);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+  SCB_EnableICache();
+  SCB_EnableDCache();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -125,18 +166,21 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_LTDC_Init();
-  MX_QUADSPI_Init();
-  MX_SDMMC1_MMC_Init();
-  MX_CRC_Init();
+  MX_MDMA_Init();
   MX_DMA2D_Init();
   MX_FMC_Init();
-  MX_TIM6_Init();
+  MX_SAI1_Init();
+  MX_QUADSPI_Init();
+  MX_USART1_UART_Init();
+  MX_LTDC_Init();
+  MX_SDMMC1_MMC_Init();
+  MX_JPEG_Init();
+  MX_LIBJPEG_Init();
+  MX_CRC_Init();
   MX_TouchGFX_Init();
   /* Call PreOsInit function */
   MX_TouchGFX_PreOSInit();
   /* USER CODE BEGIN 2 */
-
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -154,6 +198,10 @@ int main(void)
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
 
+  /* Create the queue(s) */
+  /* creation of controlQueue */
+  controlQueueHandle = osMessageQueueNew (16, sizeof(uint16_t), &controlQueue_attributes);
+
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
@@ -162,8 +210,17 @@ int main(void)
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
-  /* creation of touchGfxTask */
-  touchGfxTaskHandle = osThreadNew(touchGfxTask_handler, NULL, &touchGfxTask_attributes);
+  /* creation of TouchGFXTask */
+  TouchGFXTaskHandle = osThreadNew(TouchGFX_Task, NULL, &TouchGFXTask_attributes);
+
+  /* creation of micListenTask */
+  micListenTaskHandle = osThreadNew(micListenTask_handler, NULL, &micListenTask_attributes);
+
+  /* creation of consumerTask */
+  consumerTaskHandle = osThreadNew(consumerTask_handler, NULL, &consumerTask_attributes);
+
+  /* creation of providerTask */
+  providerTaskHandle = osThreadNew(providerTask_handler, NULL, &providerTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -185,6 +242,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
   }
+  pv_deinit(pvhandle);
   /* USER CODE END 3 */
 }
 
@@ -320,6 +378,32 @@ static void MX_DMA2D_Init(void)
 }
 
 /**
+  * @brief JPEG Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_JPEG_Init(void)
+{
+
+  /* USER CODE BEGIN JPEG_Init 0 */
+
+  /* USER CODE END JPEG_Init 0 */
+
+  /* USER CODE BEGIN JPEG_Init 1 */
+
+  /* USER CODE END JPEG_Init 1 */
+  hjpeg.Instance = JPEG;
+  if (HAL_JPEG_Init(&hjpeg) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN JPEG_Init 2 */
+
+  /* USER CODE END JPEG_Init 2 */
+
+}
+
+/**
   * @brief LTDC Initialization Function
   * @param None
   * @retval None
@@ -365,9 +449,9 @@ static void MX_LTDC_Init(void)
   pLayerCfg.Alpha0 = 0;
   pLayerCfg.BlendingFactor1 = LTDC_BLENDING_FACTOR1_CA;
   pLayerCfg.BlendingFactor2 = LTDC_BLENDING_FACTOR2_CA;
-  pLayerCfg.FBStartAdress = 0;
-  pLayerCfg.ImageWidth = 0;
-  pLayerCfg.ImageHeight = 0;
+  pLayerCfg.FBStartAdress = 0x90000000;
+  pLayerCfg.ImageWidth = 480;
+  pLayerCfg.ImageHeight = 272;
   pLayerCfg.Backcolor.Blue = 0;
   pLayerCfg.Backcolor.Green = 0;
   pLayerCfg.Backcolor.Red = 0;
@@ -390,7 +474,7 @@ static void MX_QUADSPI_Init(void)
 {
 
   /* USER CODE BEGIN QUADSPI_Init 0 */
-
+  BSP_QSPI_Init_t qspi_initParams;
   /* USER CODE END QUADSPI_Init 0 */
 
   /* USER CODE BEGIN QUADSPI_Init 1 */
@@ -398,11 +482,11 @@ static void MX_QUADSPI_Init(void)
   /* USER CODE END QUADSPI_Init 1 */
   /* QUADSPI parameter configuration*/
   hqspi.Instance = QUADSPI;
-  hqspi.Init.ClockPrescaler = 255;
+  hqspi.Init.ClockPrescaler = 3;
   hqspi.Init.FifoThreshold = 1;
-  hqspi.Init.SampleShifting = QSPI_SAMPLE_SHIFTING_NONE;
-  hqspi.Init.FlashSize = 1;
-  hqspi.Init.ChipSelectHighTime = QSPI_CS_HIGH_TIME_1_CYCLE;
+  hqspi.Init.SampleShifting = QSPI_SAMPLE_SHIFTING_HALFCYCLE;
+  hqspi.Init.FlashSize = 26;
+  hqspi.Init.ChipSelectHighTime = QSPI_CS_HIGH_TIME_3_CYCLE;
   hqspi.Init.ClockMode = QSPI_CLOCK_MODE_0;
   hqspi.Init.FlashID = QSPI_FLASH_ID_1;
   hqspi.Init.DualFlash = QSPI_DUALFLASH_DISABLE;
@@ -411,8 +495,61 @@ static void MX_QUADSPI_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN QUADSPI_Init 2 */
-
+  qspi_initParams.InterfaceMode = MT25TL01G_QPI_MODE;
+  qspi_initParams.TransferRate  = MT25TL01G_DTR_TRANSFER ;
+  qspi_initParams.DualFlashMode = MT25TL01G_DUALFLASH_ENABLE;
+  BSP_QSPI_DeInit(0);
+  if (BSP_QSPI_Init(0, &qspi_initParams) != BSP_ERROR_NONE)
+  {
+    Error_Handler( );
+  }
+  if(BSP_QSPI_EnableMemoryMappedMode(0) != BSP_ERROR_NONE)
+  {
+    Error_Handler( );
+  }
   /* USER CODE END QUADSPI_Init 2 */
+
+}
+
+/**
+  * @brief SAI1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SAI1_Init(void)
+{
+
+  /* USER CODE BEGIN SAI1_Init 0 */
+
+  /* USER CODE END SAI1_Init 0 */
+
+  /* USER CODE BEGIN SAI1_Init 1 */
+
+  /* USER CODE END SAI1_Init 1 */
+  hsai_BlockA1.Instance = SAI1_Block_A;
+  hsai_BlockA1.Init.Protocol = SAI_SPDIF_PROTOCOL;
+  hsai_BlockA1.Init.AudioMode = SAI_MODEMASTER_TX;
+  hsai_BlockA1.Init.Synchro = SAI_ASYNCHRONOUS;
+  hsai_BlockA1.Init.OutputDrive = SAI_OUTPUTDRIVE_DISABLE;
+  hsai_BlockA1.Init.FIFOThreshold = SAI_FIFOTHRESHOLD_EMPTY;
+  hsai_BlockA1.Init.AudioFrequency = SAI_AUDIO_FREQUENCY_48K;
+  hsai_BlockA1.Init.MonoStereoMode = SAI_STEREOMODE;
+  hsai_BlockA1.Init.CompandingMode = SAI_NOCOMPANDING;
+  hsai_BlockA1.Init.PdmInit.Activation = DISABLE;
+  hsai_BlockA1.Init.PdmInit.MicPairsNbr = 1;
+  hsai_BlockA1.Init.PdmInit.ClockEnable = SAI_PDM_CLOCK1_ENABLE;
+  if (HAL_SAI_Init(&hsai_BlockA1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SAI1_Init 2 */
+
+  pv_deinit(pvhandle);
+  if (pv_init(pvhandle) != PV_STATUS_SUCCESS) {
+	Error_Handler();
+  }
+
+  /* USER CODE END SAI1_Init 2 */
 
 }
 
@@ -448,40 +585,67 @@ static void MX_SDMMC1_MMC_Init(void)
 }
 
 /**
-  * @brief TIM6 Initialization Function
+  * @brief USART1 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_TIM6_Init(void)
+static void MX_USART1_UART_Init(void)
 {
 
-  /* USER CODE BEGIN TIM6_Init 0 */
+  /* USER CODE BEGIN USART1_Init 0 */
 
-  /* USER CODE END TIM6_Init 0 */
+  /* USER CODE END USART1_Init 0 */
 
-  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  /* USER CODE BEGIN USART1_Init 1 */
 
-  /* USER CODE BEGIN TIM6_Init 1 */
-
-  /* USER CODE END TIM6_Init 1 */
-  htim6.Instance = TIM6;
-  htim6.Init.Prescaler = 0;
-  htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim6.Init.Period = 65535;
-  htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 115200;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart1.Init.ClockPrescaler = UART_PRESCALER_DIV1;
+  huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
   {
     Error_Handler();
   }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim6, &sMasterConfig) != HAL_OK)
+  if (HAL_UARTEx_SetTxFifoThreshold(&huart1, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN TIM6_Init 2 */
+  if (HAL_UARTEx_SetRxFifoThreshold(&huart1, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_DisableFifoMode(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
 
-  /* USER CODE END TIM6_Init 2 */
+  /* USER CODE END USART1_Init 2 */
+
+}
+
+/**
+  * Enable MDMA controller clock
+  */
+static void MX_MDMA_Init(void)
+{
+
+  /* MDMA controller clock enable */
+  __HAL_RCC_MDMA_CLK_ENABLE();
+  /* Local variables */
+
+  /* MDMA interrupt initialization */
+  /* MDMA_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(MDMA_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(MDMA_IRQn);
 
 }
 
@@ -508,19 +672,19 @@ static void MX_FMC_Init(void)
   hsdram1.Init.RowBitsNumber = FMC_SDRAM_ROW_BITS_NUM_12;
   hsdram1.Init.MemoryDataWidth = FMC_SDRAM_MEM_BUS_WIDTH_16;
   hsdram1.Init.InternalBankNumber = FMC_SDRAM_INTERN_BANKS_NUM_4;
-  hsdram1.Init.CASLatency = FMC_SDRAM_CAS_LATENCY_1;
+  hsdram1.Init.CASLatency = FMC_SDRAM_CAS_LATENCY_3;
   hsdram1.Init.WriteProtection = FMC_SDRAM_WRITE_PROTECTION_DISABLE;
-  hsdram1.Init.SDClockPeriod = FMC_SDRAM_CLOCK_DISABLE;
-  hsdram1.Init.ReadBurst = FMC_SDRAM_RBURST_DISABLE;
+  hsdram1.Init.SDClockPeriod = FMC_SDRAM_CLOCK_PERIOD_2;
+  hsdram1.Init.ReadBurst = FMC_SDRAM_RBURST_ENABLE;
   hsdram1.Init.ReadPipeDelay = FMC_SDRAM_RPIPE_DELAY_0;
   /* SdramTiming */
-  SdramTiming.LoadToActiveDelay = 16;
-  SdramTiming.ExitSelfRefreshDelay = 16;
-  SdramTiming.SelfRefreshTime = 16;
-  SdramTiming.RowCycleDelay = 16;
-  SdramTiming.WriteRecoveryTime = 16;
-  SdramTiming.RPDelay = 16;
-  SdramTiming.RCDDelay = 16;
+  SdramTiming.LoadToActiveDelay = 2;
+  SdramTiming.ExitSelfRefreshDelay = 7;
+  SdramTiming.SelfRefreshTime = 4;
+  SdramTiming.RowCycleDelay = 7;
+  SdramTiming.WriteRecoveryTime = 5;
+  SdramTiming.RPDelay = 2;
+  SdramTiming.RCDDelay = 2;
 
   if (HAL_SDRAM_Init(&hsdram1, &SdramTiming) != HAL_OK)
   {
@@ -528,7 +692,11 @@ static void MX_FMC_Init(void)
   }
 
   /* USER CODE BEGIN FMC_Init 2 */
-
+  BSP_SDRAM_DeInit(0);
+  if(BSP_SDRAM_Init(0) != BSP_ERROR_NONE)
+  {
+	  Error_Handler( );
+  }
   /* USER CODE END FMC_Init 2 */
 }
 
@@ -695,14 +863,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
   HAL_GPIO_Init(MII_RX_ER_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : audio_Int_Pin */
-  GPIO_InitStruct.Pin = audio_Int_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Alternate = GPIO_AF6_SAI1;
-  HAL_GPIO_Init(audio_Int_GPIO_Port, &GPIO_InitStruct);
-
   /*Configure GPIO pin : LD2_Pin */
   GPIO_InitStruct.Pin = LD2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -848,6 +1008,97 @@ void StartDefaultTask(void *argument)
     osDelay(1);
   }
   /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_micListenTask_handler */
+/**
+* @brief Function implementing the micListenTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_micListenTask_handler */
+void micListenTask_handler(void *argument)
+{
+  /* USER CODE BEGIN micListenTask_handler */
+  /* Infinite loop */
+  for(;;)
+  {
+    const int8_t *buffer = pv_audio_rec_get_new_buffer();
+    if (buffer) {
+
+	  const pv_status_t status = pv_picovoice_process(pvhandle, buffer);
+	  if (status != PV_STATUS_SUCCESS) {
+
+	    printf("Picovoice process failed with '%s'", pv_status_to_string(status));
+	    Error_Handler();
+	  }
+    }
+    osDelay(1);
+  }
+  /* USER CODE END micListenTask_handler */
+}
+
+/* USER CODE BEGIN Header_consumerTask_handler */
+/**
+* @brief Function implementing the consumerTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_consumerTask_handler */
+void consumerTask_handler(void *argument)
+{
+  /* USER CODE BEGIN consumerTask_handler */
+
+  ControlType* controlType = NULL;
+  /* Infinite loop */
+  for(;;)
+  {
+	if(xQueueReceive(controlQueueHandle, (void*) controlType, 0) == pdFALSE) {
+	  osDelay(200);
+	}
+  }
+  /* USER CODE END consumerTask_handler */
+}
+
+/* USER CODE BEGIN Header_providerTask_handler */
+/**
+* @brief Function implementing the providerTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_providerTask_handler */
+void providerTask_handler(void *argument)
+{
+  /* USER CODE BEGIN providerTask_handler */
+  /* Infinite loop */
+  if(argument == NULL) {
+	vTaskDelete(NULL);
+  }
+
+  xQueueSendToBack(controlQueueHandle, (ControlType*) argument, 0);
+  vTaskDelete(NULL);
+  /* USER CODE END providerTask_handler */
+}
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM6 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM6) {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
 }
 
 /**

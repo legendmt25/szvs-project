@@ -18,13 +18,16 @@
         ],
         "Interactions": [
           {
-            "InteractionName": "button1Interaction1",
+            "InteractionName": "button1Tap",
+            "HasCompletedTrigger": true,
             "Trigger": {
               "Type": "TriggerClicked",
               "TriggerComponent": "button1"
             },
             "Action": {
-              "Type": "ActionExecuteCode"
+              "Type": "ActionExecuteCode",
+              "Includes": "#include \"cmsis_os.h\"\r\n#include \"main.h\"",
+              "Code": "ControlType controlType;\r\ncontrolType.type = \"Control 1\";\r\n\r\nconst osThreadAttr_t providerTask_attributes = {\r\n  .name = \"providerTask\",\r\n  .stack_size = 128 * 4,\r\n  .priority = (osPriority_t) osPriorityNormal,\r\n};\r\n\r\nosThreadId_t providerTaskHandle = \r\n  osThreadNew(\r\n    providerTask_handler, \r\n    (void*) &controlType, \r\n    &providerTask_attributes);"
             }
           }
         ]

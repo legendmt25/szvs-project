@@ -1,0 +1,9 @@
+../Core/Src/pv_audio_rec.c:54:13:pv_audio_rec_init	2
+../Core/Src/pv_audio_rec.c:70:13:pv_audio_rec_start	2
+../Core/Src/pv_audio_rec.c:79:13:pv_audio_rec_stop	2
+../Core/Src/pv_audio_rec.c:87:15:pv_audio_rec_get_new_buffer	3
+../Core/Src/pv_audio_rec.c:101:23:pv_hpf	4
+../Core/Src/pv_audio_rec.c:107:6:BSP_AUDIO_IN_TransferComplete_CallBack	3
+../Core/Src/pv_audio_rec.c:121:6:BSP_AUDIO_IN_HalfTransfer_CallBack	3
+../Core/Src/pv_audio_rec.c:135:6:BSP_AUDIO_IN_Error_CallBack	1
+../Core/Src/pv_audio_rec.c:139:6:pv_audio_rec_deinit	1

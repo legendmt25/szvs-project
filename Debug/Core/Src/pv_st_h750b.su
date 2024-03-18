@@ -1,0 +1,11 @@
+../Core/Src/pv_st_h750b.c:42:16:pv_get_uuid	4	static
+../Core/Src/pv_st_h750b.c:46:16:pv_get_uuid_size	4	static
+../Core/Src/pv_st_h750b.c:50:13:inference_callback	24	static
+../Core/Src/pv_st_h750b.c:73:13:wake_word_callback	8	static
+../Core/Src/pv_st_h750b.c:80:13:pv_init_uuid	4	static
+../Core/Src/pv_st_h750b.c:85:6:print_error_message	24	static
+../Core/Src/pv_st_h750b.c:91:13:pv_init	72	static
+../Core/Src/pv_st_h750b.c:160:6:pv_deinit	16	static
+../Core/Src/pv_st_h750b.c:165:6:pv_error_handler	4	static
+../Core/Src/pv_st_h750b.c:169:6:assert_failed	16	static
+../Core/Src/pv_st_h750b.c:175:5:__io_putchar	16	static

@@ -35,7 +35,7 @@
 #define USE_FT5336_TS_CTRL                 1U
 
 
-#define LCD_LAYER_0_ADDRESS                 0xD0000000U
+#define LCD_LAYER_0_ADDRESS                 0xD0200000U
 
 /* Audio codecs defines */
 #define USE_AUDIO_CODEC_WM8994              1U

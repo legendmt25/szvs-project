@@ -7,7 +7,10 @@
 C_SRCS += \
 ../Core/Src/freertos.c \
 ../Core/Src/main.c \
+../Core/Src/pv_audio_rec.c \
+../Core/Src/pv_st_h750b.c \
 ../Core/Src/stm32h7xx_hal_msp.c \
+../Core/Src/stm32h7xx_hal_timebase_tim.c \
 ../Core/Src/stm32h7xx_it.c \
 ../Core/Src/syscalls.c \
 ../Core/Src/sysmem.c \
@@ -16,7 +19,10 @@ C_SRCS += \
 C_DEPS += \
 ./Core/Src/freertos.d \
 ./Core/Src/main.d \
+./Core/Src/pv_audio_rec.d \
+./Core/Src/pv_st_h750b.d \
 ./Core/Src/stm32h7xx_hal_msp.d \
+./Core/Src/stm32h7xx_hal_timebase_tim.d \
 ./Core/Src/stm32h7xx_it.d \
 ./Core/Src/syscalls.d \
 ./Core/Src/sysmem.d \
@@ -25,7 +31,10 @@ C_DEPS += \
 OBJS += \
 ./Core/Src/freertos.o \
 ./Core/Src/main.o \
+./Core/Src/pv_audio_rec.o \
+./Core/Src/pv_st_h750b.o \
 ./Core/Src/stm32h7xx_hal_msp.o \
+./Core/Src/stm32h7xx_hal_timebase_tim.o \
 ./Core/Src/stm32h7xx_it.o \
 ./Core/Src/syscalls.o \
 ./Core/Src/sysmem.o \
@@ -34,12 +43,12 @@ OBJS += \
 
 # Each subdirectory must supply rules for building sources it contributes
 Core/Src/%.o Core/Src/%.su Core/Src/%.cyclo: ../Core/Src/%.c Core/Src/subdir.mk
-	arm-none-eabi-gcc "$<" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32H750xx -c -I../Core/Inc -I../Drivers/STM32H7xx_HAL_Driver/Inc -I../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../Drivers/CMSIS/Include -I../TouchGFX/App -I../TouchGFX/target/generated -I../TouchGFX/target -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../Middlewares/ST/touchgfx/framework/include -I../TouchGFX/generated/fonts/include -I../TouchGFX/generated/gui_generated/include -I../TouchGFX/generated/images/include -I../TouchGFX/generated/texts/include -I../TouchGFX/generated/videos/include -I../TouchGFX/gui/include -I"C:/Users/Martin/STM32CubeIDE/workspace_1.14.0/project/Drivers/BSP/STM32H750-DK-Discovery" -I"C:/Users/Martin/STM32CubeIDE/workspace_1.14.0/project/Drivers/BSP/Components/Common" -I"C:/Users/Martin/STM32CubeIDE/workspace_1.14.0/project/Drivers/BSP/Components/rk043fn48h" -I"C:/Users/Martin/STM32CubeIDE/workspace_1.14.0/project/Drivers/BSP/Components/wm8994" -I"C:/Users/Martin/STM32CubeIDE/workspace_1.14.0/project/Middlewares/ST/STM32_Audio/Addons/PDM/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "$@"
+	arm-none-eabi-gcc "$<" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32H750xx -D__PV_LANGUAGE_ENGLISH__ -c -I../Core/Inc -I../Drivers/STM32H7xx_HAL_Driver/Inc -I../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../Drivers/CMSIS/Include -I../TouchGFX/App -I../TouchGFX/target/generated -I../TouchGFX/target -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../Middlewares/ST/touchgfx/framework/include -I../TouchGFX/generated/fonts/include -I../TouchGFX/generated/gui_generated/include -I../TouchGFX/generated/images/include -I../TouchGFX/generated/texts/include -I../TouchGFX/generated/videos/include -I../TouchGFX/gui/include -I"C:/Users/Martin/STM32CubeIDE/workspace_1.14.0/project/Drivers/BSP/STM32H750-DK-Discovery" -I"C:/Users/Martin/STM32CubeIDE/workspace_1.14.0/project/Drivers/BSP/Components/Common" -I"C:/Users/Martin/STM32CubeIDE/workspace_1.14.0/project/Drivers/BSP/Components/rk043fn48h" -I"C:/Users/Martin/STM32CubeIDE/workspace_1.14.0/project/Drivers/BSP/Components/wm8994" -I"C:/Users/Martin/STM32CubeIDE/workspace_1.14.0/project/Middlewares/ST/STM32_Audio/Addons/PDM/Inc" -I"C:/Users/Martin/STM32CubeIDE/workspace_1.14.0/project/Drivers/BSP/Components/mt25tl01g" -I"C:/Users/Martin/STM32CubeIDE/workspace_1.14.0/project/sdk/mcu/include" -I../LIBJPEG/App -I../LIBJPEG/Target -I../Utilities/JPEG -I../Middlewares/Third_Party/LibJPEG/include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "$@"
 
 clean: clean-Core-2f-Src
 
 clean-Core-2f-Src:
-	-$(RM) ./Core/Src/freertos.cyclo ./Core/Src/freertos.d ./Core/Src/freertos.o ./Core/Src/freertos.su ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/stm32h7xx_hal_msp.cyclo ./Core/Src/stm32h7xx_hal_msp.d ./Core/Src/stm32h7xx_hal_msp.o ./Core/Src/stm32h7xx_hal_msp.su ./Core/Src/stm32h7xx_it.cyclo ./Core/Src/stm32h7xx_it.d ./Core/Src/stm32h7xx_it.o ./Core/Src/stm32h7xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32h7xx.cyclo ./Core/Src/system_stm32h7xx.d ./Core/Src/system_stm32h7xx.o ./Core/Src/system_stm32h7xx.su
+	-$(RM) ./Core/Src/freertos.cyclo ./Core/Src/freertos.d ./Core/Src/freertos.o ./Core/Src/freertos.su ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/pv_audio_rec.cyclo ./Core/Src/pv_audio_rec.d ./Core/Src/pv_audio_rec.o ./Core/Src/pv_audio_rec.su ./Core/Src/pv_st_h750b.cyclo ./Core/Src/pv_st_h750b.d ./Core/Src/pv_st_h750b.o ./Core/Src/pv_st_h750b.su ./Core/Src/stm32h7xx_hal_msp.cyclo ./Core/Src/stm32h7xx_hal_msp.d ./Core/Src/stm32h7xx_hal_msp.o ./Core/Src/stm32h7xx_hal_msp.su ./Core/Src/stm32h7xx_hal_timebase_tim.cyclo ./Core/Src/stm32h7xx_hal_timebase_tim.d ./Core/Src/stm32h7xx_hal_timebase_tim.o ./Core/Src/stm32h7xx_hal_timebase_tim.su ./Core/Src/stm32h7xx_it.cyclo ./Core/Src/stm32h7xx_it.d ./Core/Src/stm32h7xx_it.o ./Core/Src/stm32h7xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32h7xx.cyclo ./Core/Src/system_stm32h7xx.d ./Core/Src/system_stm32h7xx.o ./Core/Src/system_stm32h7xx.su
 
 .PHONY: clean-Core-2f-Src
 

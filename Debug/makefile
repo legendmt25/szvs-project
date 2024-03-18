@@ -9,6 +9,7 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include Utilities/JPEG/subdir.mk
 -include TouchGFX/target/generated/subdir.mk
 -include TouchGFX/target/subdir.mk
 -include TouchGFX/gui/src/screen_screen/subdir.mk
@@ -35,14 +36,17 @@ RM := rm -rf
 -include TouchGFX/build/MINGW32_NT-6.2/generated/gui_generated/src/common/subdir.mk
 -include TouchGFX/build/MINGW32_NT-6.2/generated/fonts/src/subdir.mk
 -include TouchGFX/App/subdir.mk
+-include Middlewares/Third_Party/LibJPEG/source/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/subdir.mk
+-include LIBJPEG/App/subdir.mk
 -include Drivers/STM32H7xx_HAL_Driver/Src/subdir.mk
 -include Drivers/BSP/STM32H750-DK-Discovery/subdir.mk
 -include Drivers/BSP/Components/wm8994/subdir.mk
 -include Drivers/BSP/Components/mt48lc4m32b2/subdir.mk
+-include Drivers/BSP/Components/mt25tl01g/subdir.mk
 -include Drivers/BSP/Components/ft5336/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
@@ -119,7 +123,7 @@ main-build: project.elf secondary-outputs
 
 # Tool invocations
 project.elf project.map: $(OBJS) $(USER_OBJS) C:\Users\Martin\STM32CubeIDE\workspace_1.14.0\project\STM32H750XBHX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "project.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\Users\Martin\STM32CubeIDE\workspace_1.14.0\project\STM32H750XBHX_FLASH.ld" --specs=nosys.specs -Wl,-Map="project.map" -Wl,--gc-sections -static -L"C:\Users\Martin\STM32CubeIDE\workspace_1.14.0\project\Middlewares\ST\touchgfx\lib\core\cortex_m7\gcc" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+	arm-none-eabi-g++ -o "project.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\Users\Martin\STM32CubeIDE\workspace_1.14.0\project\STM32H750XBHX_FLASH.ld" --specs=nosys.specs -Wl,-Map="project.map" -Wl,--gc-sections -static -L"C:\Users\Martin\STM32CubeIDE\workspace_1.14.0\project\sdk\mcu\lib\stm32f769\en" -L"C:\Users\Martin\STM32CubeIDE\workspace_1.14.0\project\Middlewares\ST\STM32_Audio\Addons\PDM\Lib" -L"C:\Users\Martin\STM32CubeIDE\workspace_1.14.0\project\Middlewares\ST\touchgfx\lib\core\cortex_m7\gcc" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

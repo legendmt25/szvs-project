@@ -1,4 +1,4 @@
-	x1/**
+/**
   ******************************************************************************
   * @file    stm32h750b_discovery_audio.h
   * @author  MCD Application Team

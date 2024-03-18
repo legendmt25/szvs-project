@@ -5,7 +5,8 @@
 #include <touchgfx/Color.hpp>
 #include <images/BitmapDatabase.hpp>
 
-screenViewBase::screenViewBase()
+screenViewBase::screenViewBase() :
+    buttonCallback(this, &screenViewBase::buttonCallbackHandler)
 {
     __background.setPosition(0, 0, 480, 272);
     __background.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
@@ -13,6 +14,7 @@ screenViewBase::screenViewBase()
 
     button1.setXY(110, 188);
     button1.setBitmaps(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_BUTTON_REGULAR_HEIGHT_50_MEDIUM_ROUNDED_NORMAL_ID), touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_BUTTON_REGULAR_HEIGHT_50_MEDIUM_ROUNDED_PRESSED_ID));
+    button1.setAction(buttonCallback);
     add(button1);
 }
 
@@ -24,4 +26,28 @@ screenViewBase::~screenViewBase()
 void screenViewBase::setupScreen()
 {
 
+}
+
+void screenViewBase::buttonCallbackHandler(const touchgfx::AbstractButton& src)
+{
+    if (&src == &button1)
+    {
+        //button1Tap
+        //When button1 clicked execute C++ code
+        //Execute C++ code
+        ControlType controlType;
+        controlType.type = "Control 1";
+        
+        const osThreadAttr_t providerTask_attributes = {
+          .name = "providerTask",
+          .stack_size = 128 * 4,
+          .priority = (osPriority_t) osPriorityNormal,
+        };
+        
+        osThreadId_t providerTaskHandle = 
+          osThreadNew(
+            providerTask_handler, 
+            (void*) &controlType, 
+            &providerTask_attributes);
+    }
 }
